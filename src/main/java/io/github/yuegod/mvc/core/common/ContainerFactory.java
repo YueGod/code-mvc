@@ -6,5 +6,8 @@ package io.github.yuegod.mvc.core.common;
  * @description
  **/
 public interface ContainerFactory {
+    
     Object getInstance(String instanceName);
+
+    Object createInstance(String instanceName);
 }

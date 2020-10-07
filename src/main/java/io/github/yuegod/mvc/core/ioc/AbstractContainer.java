@@ -3,6 +3,7 @@ package io.github.yuegod.mvc.core.ioc;
 import io.github.yuegod.mvc.aop.ProxyObjectFactory;
 import io.github.yuegod.mvc.core.common.ContainerFactory;
 
+import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -13,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2020/10/07
  * @description 用于定义一些方法和公用成员变量
  **/
-public abstract class AbstractContainer implements ContainerFactory {
+public abstract class AbstractContainer {
 
     /**
      * 将扫描到的包路径下的类缓存到集合，等待处理完毕后再清空
@@ -28,7 +29,7 @@ public abstract class AbstractContainer implements ContainerFactory {
     /**
      * 单例缓存池
      */
-    private Map<String, Object> singletonCache = new ConcurrentHashMap<>(128);
+    protected Map<String, Object> singletonCache = new ConcurrentHashMap<>(128);
 
     /**
      * 二级缓存池，用于解决循环依赖问题
@@ -46,17 +47,9 @@ public abstract class AbstractContainer implements ContainerFactory {
     protected Set<String> creationObjectFlags = new HashSet<>(128);
 
     /**
-     * 用于创建一个实例对象
-     *
-     * @param clazz 扫描到的类
-     * @return 返回一个创建好的实例对象
+     * 注解注册器
      */
-    protected abstract Object createInstance(Class clazz);
-
-    @Override
-    public Object getInstance(String instanceName) {
-        return singletonCache.get(instanceName);
-    }
+    protected Map<String, Class<? extends Annotation>> annotationRegistryCache = new ConcurrentHashMap<>(32);
 
 
 }
