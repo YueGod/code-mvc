@@ -46,9 +46,13 @@ public class ContainerHandler extends AbstractContainer {
      * 3.执行RegistryAnnotationConfiguration，将扫描到的注册到容器中
      */
     private void registryConfiguration(){
-        registryAnnotationConfiguration.getRegistryClazz(scannedClazz);
+        Set<Class> registryClazz = registryAnnotationConfiguration.getRegistryClazz(scannedClazz);
+
     }
 
+    /**
+     * 初始化IOC容器
+     */
     public void initialize(String packagePath){
 
     }
