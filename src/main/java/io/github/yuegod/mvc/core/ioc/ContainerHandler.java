@@ -17,11 +17,21 @@ import java.util.Set;
  * @date 2020/10/07
  * @description 容器处理
  **/
-public class ContainerHandler extends AbstractContainer {
+public class ContainerHandler {
+
+    private AchieveContainerFactory containerFactory;
 
     private RegistryAnnotationConfiguration registryAnnotationConfiguration;
 
     private HashMap<String, AnnotationRegistry> annotationRegistryHashMap;
+
+    public ContainerHandler() {
+        this(new AchieveContainerFactory());
+    }
+
+    public ContainerHandler(AchieveContainerFactory containerFactory) {
+        this.containerFactory = containerFactory;
+    }
 
     /**
      * 1.先扫描出所有的类并添加到对应的缓存容器中
@@ -30,10 +40,10 @@ public class ContainerHandler extends AbstractContainer {
         ContainerScanner scanner = new ContainerScanner();
         if (StringUtils.isNotEmpty(packagePath)) {
             Set<Class<?>> classes = scanner.scan(packagePath);
-            scannedClazz.addAll(classes);
+            containerFactory.getScannedClazz().addAll(classes);
         } else {
             Set<Class<?>> classes = scanner.scan();
-            scannedClazz.addAll(classes);
+            containerFactory.getScannedClazz().addAll(classes);
         }
 
     }
@@ -49,10 +59,10 @@ public class ContainerHandler extends AbstractContainer {
      * 3.执行RegistryAnnotationConfiguration，将扫描到的注册到容器中
      */
     private void registryConfiguration() {
-        Set<Class> registryClazz = registryAnnotationConfiguration.getRegistryClazz(scannedClazz);
+        Set<Class> registryClazz = registryAnnotationConfiguration.getRegistryClazz(containerFactory.getScannedClazz());
         for (Class clazz : registryClazz) {
             try {
-                singletonCache.put(clazz.getName(), clazz.newInstance());
+                containerFactory.putSingletonCache(clazz.getName(), clazz.newInstance());
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             } catch (InstantiationException e) {
@@ -69,8 +79,23 @@ public class ContainerHandler extends AbstractContainer {
         Set<Map.Entry<String, AnnotationRegistry>> entries = annotationRegistryHashMap.entrySet();
         for (Map.Entry<String, AnnotationRegistry> entry : entries) {
             AnnotationRegistry annotationRegistry = entry.getValue();
-            annotationRegistryCache.put(entry.getKey(), annotationRegistry.registry());
+            containerFactory.putAnnotationRegistryCache(entry.getKey(), annotationRegistry.registry());
         }
+    }
+
+    /**
+     * 5.找到符合AnnotationRegistry类型的实例
+     */
+    public void findAnnotationRegistryInstance() {
+        HashMap<String, AnnotationRegistry> annotationRegistries = new HashMap<>();
+        Set<Map.Entry<String, Object>> entries = containerFactory.getSingletonCache().entrySet();
+        for (Map.Entry<String, Object> entry : entries) {
+            if (entry.getValue() instanceof AnnotationRegistry) {
+                AnnotationRegistry annotationRegistry = (AnnotationRegistry) entry.getValue();
+                annotationRegistries.put(entry.getKey(), annotationRegistry);
+            }
+        }
+        this.annotationRegistryHashMap = annotationRegistries;
     }
 
     /**
@@ -79,12 +104,12 @@ public class ContainerHandler extends AbstractContainer {
     private void invokeAnnotationHandler() {
         HashMap<String, AnnotationRegistry> annotationRegistryHashMap = this.annotationRegistryHashMap;
         Set<Map.Entry<String, AnnotationRegistry>> entries = annotationRegistryHashMap.entrySet();
-        for (Class scannedClazz : scannedClazz) {
+        for (Class scannedClazz : containerFactory.getScannedClazz()) {
             for (Map.Entry<String, AnnotationRegistry> entry : entries) {
-                Class<? extends Annotation> annotationClazz = annotationRegistryCache.get(entry.getKey());
+                Class<? extends Annotation> annotationClazz = containerFactory.getAnnotationRegistryCache().get(entry.getKey());
                 AnnotationRegistry annotationRegistry = entry.getValue();
                 if (scannedClazz.getAnnotation(annotationClazz) != null) {
-                    annotationRegistry.handler(scannedClazz);
+                    annotationRegistry.handler(scannedClazz, containerFactory);
                 }
             }
         }
@@ -95,21 +120,6 @@ public class ContainerHandler extends AbstractContainer {
      */
     public void initialize(String packagePath) {
 
-    }
-
-    /**
-     * 5.找到符合AnnotationRegistry类型的实例
-     */
-    public void findAnnotationRegistryInstance() {
-        HashMap<String, AnnotationRegistry> annotationRegistries = new HashMap<>();
-        Set<Map.Entry<String, Object>> entries = singletonCache.entrySet();
-        for (Map.Entry<String, Object> entry : entries) {
-            if (entry.getValue() instanceof AnnotationRegistry) {
-                AnnotationRegistry annotationRegistry = (AnnotationRegistry) entry.getValue();
-                annotationRegistries.put(entry.getKey(), annotationRegistry);
-            }
-        }
-        this.annotationRegistryHashMap = annotationRegistries;
     }
 
 

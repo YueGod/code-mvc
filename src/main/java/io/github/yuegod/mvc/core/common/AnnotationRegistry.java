@@ -1,5 +1,7 @@
 package io.github.yuegod.mvc.core.common;
 
+import io.github.yuegod.mvc.core.ioc.AchieveContainerFactory;
+
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
@@ -21,6 +23,6 @@ public interface AnnotationRegistry {
      *
      * @param clazz 传入一个被扫描到的Class类
      */
-    void handler(Class clazz);
+    void handler(Class clazz, AchieveContainerFactory containerFactory);
 
 }
