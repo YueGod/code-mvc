@@ -3,6 +3,7 @@ package io.github.yuegod.mvc.core.ioc;
 import io.github.yuegod.mvc.core.annotation.Registry;
 import io.github.yuegod.mvc.core.common.AnnotationRegistry;
 import io.github.yuegod.mvc.core.configuration.RegistryAnnotationConfiguration;
+import io.github.yuegod.mvc.core.configuration.RegistryDescription;
 import io.github.yuegod.mvc.util.StringUtils;
 import lombok.NoArgsConstructor;
 
@@ -59,10 +60,10 @@ public class ContainerHandler {
      * 3.执行RegistryAnnotationConfiguration，将扫描到的注册到容器中
      */
     private void registryConfiguration() {
-        Set<Class> registryClazz = registryAnnotationConfiguration.getRegistryClazz(containerFactory.getScannedClazz());
-        for (Class clazz : registryClazz) {
+        Set<RegistryDescription> registryDescriptions = registryAnnotationConfiguration.getRegistryClazz(containerFactory.getScannedClazz());
+        for (RegistryDescription registryDescription : registryDescriptions) {
             try {
-                containerFactory.putSingletonCache(clazz.getName(), clazz.newInstance());
+                containerFactory.putRegistrySingletonCache(registryDescription.getInstanceName(), registryDescription.getRegistryClazz().newInstance());
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             } catch (InstantiationException e) {

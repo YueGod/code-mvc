@@ -1,5 +1,6 @@
 package io.github.yuegod.mvc.core.configuration;
 
+import io.github.yuegod.mvc.core.annotation.IoC;
 import io.github.yuegod.mvc.core.annotation.Registry;
 import io.github.yuegod.mvc.core.common.AnnotationRegistry;
 import io.github.yuegod.mvc.core.ioc.AchieveContainerFactory;
@@ -15,7 +16,7 @@ import java.lang.annotation.Annotation;
 public class IocAnnotationRegistry implements AnnotationRegistry {
     @Override
     public Class<? extends Annotation> registry() {
-        return io.github.yuegod.mvc.annotation.Ioc.class;
+        return IoC.class;
     }
 
     @Override

@@ -11,4 +11,8 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Registry {
+    /**
+     * 排序 order越小优先级越高
+     */
+    int order() default 0;
 }

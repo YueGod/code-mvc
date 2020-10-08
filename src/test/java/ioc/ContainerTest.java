@@ -1,10 +1,10 @@
-import io.github.yuegod.mvc.aop.ObtainDynamicProxyPostProcessor;
+package ioc;
+
+import io.github.yuegod.mvc.core.annotation.IoC;
 import io.github.yuegod.mvc.core.annotation.Registry;
-import io.github.yuegod.mvc.core.common.ContainerPostProcessor;
+import io.github.yuegod.mvc.core.configuration.IocAnnotationRegistry;
 import io.github.yuegod.mvc.core.ioc.ContainerScanner;
 import org.junit.Test;
-import org.reflections.Reflections;
-import sun.net.www.protocol.file.FileURLConnection;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -23,9 +23,7 @@ public class ContainerTest {
 
     @Test
     public void scanner() throws IOException, URISyntaxException {
-        String name = ContainerScanner.class.getPackage().getName();
-        System.out.println(name);
-        Set<Class<?>> classes = getClasses("io.github");
+        Set<Class> classes = getClasses("ioc");
         for (Class<?> aClass : classes) {
             System.out.println(aClass.getName());
         }
@@ -33,12 +31,13 @@ public class ContainerTest {
 
     /**
      * 从包package中获取所有的Class
+     *
      * @return
      */
-    public Set<Class<?>> getClasses(String packageName){
+    public static Set<Class> getClasses(String packageName) {
 
         //第一个class类的集合
-        Set<Class<?>> classes = new HashSet<>();
+        Set<Class> classes = new HashSet<>();
         //是否循环迭代
         boolean recursive = true;
         //获取包的名字 并进行替换
@@ -48,7 +47,7 @@ public class ContainerTest {
         try {
             dirs = Thread.currentThread().getContextClassLoader().getResources(packageDirName);
             //循环迭代下去
-            while (dirs.hasMoreElements()){
+            while (dirs.hasMoreElements()) {
                 //获取下一个元素
                 URL url = dirs.nextElement();
                 //得到协议的名称
@@ -59,7 +58,7 @@ public class ContainerTest {
                     String filePath = URLDecoder.decode(url.getFile(), "UTF-8");
                     //以文件的方式扫描整个包下的文件 并添加到集合中
                     findAndAddClassesInPackageByFile(packageName, filePath, recursive, classes);
-                } else if ("jar".equals(protocol)){
+                } else if ("jar".equals(protocol)) {
                     //如果是jar包文件
                     //定义一个JarFile
                     JarFile jar;
@@ -87,7 +86,7 @@ public class ContainerTest {
                                     packageName = name.substring(0, idx).replace('/', '.');
                                 }
                                 //如果可以迭代下去 并且是一个包
-                                if ((idx != -1) || recursive){
+                                if ((idx != -1) || recursive) {
                                     //如果是一个.class文件 而且不是目录
                                     if (name.endsWith(".class") && !entry.isDirectory()) {
                                         //去掉后面的".class" 获取真正的类名
@@ -115,7 +114,7 @@ public class ContainerTest {
     }
 
 
-    public void findAndAddClassesInPackageByFile(String packageName, String packagePath, final boolean recursive, Set<Class<?>> classes){
+    public static void findAndAddClassesInPackageByFile(String packageName, String packagePath, final boolean recursive, Set<Class> classes) {
         //获取此包的目录 建立一个File
         File dir = new File(packagePath);
         //如果不存在或者 也不是目录就直接返回
@@ -137,8 +136,7 @@ public class ContainerTest {
                         file.getAbsolutePath(),
                         recursive,
                         classes);
-            }
-            else {
+            } else {
                 //如果是java类文件 去掉后面的.class 只留下类名
                 String className = file.getName().substring(0, file.getName().length() - 6);
                 try {
@@ -151,5 +149,10 @@ public class ContainerTest {
         }
     }
 
+    @Test
+    public void test() {
+        Registry annotation = IocAnnotationRegistry.class.getAnnotation(Registry.class);
+        System.out.println(annotation.order());
+    }
 
 }

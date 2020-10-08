@@ -5,8 +5,11 @@ import io.github.yuegod.mvc.core.common.AnnotationRegistry;
 import io.github.yuegod.mvc.core.ioc.ContainerHandler;
 
 import java.lang.annotation.Annotation;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author quziwei
@@ -15,18 +18,24 @@ import java.util.Set;
  **/
 public class RegistryAnnotationConfiguration {
 
+
     /**
      * 获取加了Registry注解的类型
+     *
      * @return 返回集合
      */
-    public Set<Class> getRegistryClazz(Set<Class> scannedClass) {
-        Set<Class> registryClazz = new HashSet<>();
+    public Set<RegistryDescription> getRegistryClazz(Set<Class> scannedClass) {
+        Set<RegistryDescription> registryDescriptions = new LinkedHashSet<>();
         for (Class clazz : scannedClass) {
             if (isRegistry(clazz)) {
-                registryClazz.add(clazz);
+                Registry registry = (Registry) clazz.getAnnotation(Registry.class);
+                RegistryDescription registryDescription = new RegistryDescription(clazz.getName(), clazz, registry.order());
+                registryDescriptions.add(registryDescription);
             }
         }
-        return registryClazz;
+        //按Order进行排序
+        registryDescriptions.stream().sorted(Comparator.comparingInt(RegistryDescription::getOrder));
+        return registryDescriptions;
     }
 
     /**
@@ -38,4 +47,5 @@ public class RegistryAnnotationConfiguration {
         }
         return false;
     }
+
 }

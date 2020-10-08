@@ -122,4 +122,12 @@ public class AchieveContainerFactory extends AbstractContainer implements Contai
         annotationRegistryCache.put(instanceName, annotationClazz);
     }
 
+    public Map<String, Object> getRegistrySingletonCache() {
+        return registrySingletonCache;
+    }
+
+    public void putRegistrySingletonCache(String instanceName, Object instance) {
+        registrySingletonCache.put(instanceName, instance);
+    }
+
 }

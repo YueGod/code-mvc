@@ -5,9 +5,11 @@ import io.github.yuegod.mvc.core.common.ContainerFactory;
 
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 /**
  * @author quziwei
@@ -29,7 +31,7 @@ public abstract class AbstractContainer {
     /**
      * 单例缓存池
      */
-    protected static Map<String, Object> singletonCache = new ConcurrentHashMap<>(128);
+    protected static Map<String, Object> singletonCache = new ConcurrentHashMap<>(256);
 
     /**
      * 二级缓存池，用于解决循环依赖问题
@@ -49,7 +51,11 @@ public abstract class AbstractContainer {
     /**
      * 注解注册器
      */
-    protected static Map<String, Class<? extends Annotation>> annotationRegistryCache = new ConcurrentHashMap<>(32);
+    protected static Map<String, Class<? extends Annotation>> annotationRegistryCache = new LinkedHashMap<>(128);
 
+    /**
+     * 注册类单例缓存池
+     */
+    protected static Map<String, Object> registrySingletonCache = new LinkedHashMap<>();
 
 }

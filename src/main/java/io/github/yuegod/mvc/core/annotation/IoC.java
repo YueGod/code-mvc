@@ -1,4 +1,4 @@
-package io.github.yuegod.mvc.annotation;
+package io.github.yuegod.mvc.core.annotation;
 
 import java.lang.annotation.*;
 
@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Ioc {
+public @interface IoC {
 
     /**
      * 是否为单例模式

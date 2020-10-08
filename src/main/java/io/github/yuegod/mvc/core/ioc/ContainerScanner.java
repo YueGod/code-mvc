@@ -157,37 +157,4 @@ public class ContainerScanner {
     public Set<Class<?>> scan() {
         return scan("");
     }
-
-
-    /**
-     * 扫描到的报名路径
-     */
-    public List<String> scanPathList(String realPath) {
-        List<String> paths = new ArrayList<>();
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        Enumeration<URL> resourceUrls = null;
-        try {
-            resourceUrls = (cl != null ? cl.getResources(realPath) : ClassLoader.getSystemResources(realPath));
-        } catch (IOException e) {
-            log.error("read package path error.", e);
-        }
-        while (resourceUrls.hasMoreElements()) {
-            URL url = resourceUrls.nextElement();
-            String urlPath = url.getPath();
-            urlPath = urlPath.substring(1);
-            paths.add(urlPath);
-        }
-        if (paths.size() == 0) {
-            try {
-                throw new FileNotFoundException();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-        return paths;
-    }
-
-
-
-
 }
