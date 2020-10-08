@@ -1,11 +1,9 @@
 package io.github.yuegod.mvc.core.ioc;
 
-import io.github.yuegod.mvc.core.annotation.Registry;
 import io.github.yuegod.mvc.core.common.AnnotationRegistry;
 import io.github.yuegod.mvc.core.configuration.RegistryAnnotationConfiguration;
 import io.github.yuegod.mvc.core.configuration.RegistryDescription;
 import io.github.yuegod.mvc.util.StringUtils;
-import lombok.NoArgsConstructor;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
@@ -89,7 +87,7 @@ public class ContainerHandler {
      */
     public void findAnnotationRegistryInstance() {
         HashMap<String, AnnotationRegistry> annotationRegistries = new HashMap<>();
-        Set<Map.Entry<String, Object>> entries = containerFactory.getSingletonCache().entrySet();
+        Set<Map.Entry<String, Object>> entries = containerFactory.getRegistrySingletonCache().entrySet();
         for (Map.Entry<String, Object> entry : entries) {
             if (entry.getValue() instanceof AnnotationRegistry) {
                 AnnotationRegistry annotationRegistry = (AnnotationRegistry) entry.getValue();

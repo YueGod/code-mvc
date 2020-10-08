@@ -1,11 +1,9 @@
 package io.github.yuegod.mvc.core.ioc;
 
-import io.github.yuegod.mvc.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
@@ -155,6 +153,6 @@ public class ContainerScanner {
      * 当没有设置扫描路径的时候，则默认从根目录开始扫描
      */
     public Set<Class<?>> scan() {
-        return scan("");
+        return scan("io.github.yuegod");
     }
 }

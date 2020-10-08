@@ -1,6 +1,5 @@
 package ioc;
 
-import io.github.yuegod.mvc.core.annotation.IoC;
 import io.github.yuegod.mvc.core.annotation.Registry;
 import io.github.yuegod.mvc.core.configuration.IocAnnotationRegistry;
 import io.github.yuegod.mvc.core.ioc.ContainerScanner;
@@ -23,7 +22,9 @@ public class ContainerTest {
 
     @Test
     public void scanner() throws IOException, URISyntaxException {
-        Set<Class> classes = getClasses("ioc");
+        String name = ContainerScanner.class.getPackage().getName();
+        System.out.println(name);
+        Set<Class> classes = getClasses("");
         for (Class<?> aClass : classes) {
             System.out.println(aClass.getName());
         }

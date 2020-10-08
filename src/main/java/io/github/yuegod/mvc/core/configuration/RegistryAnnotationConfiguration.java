@@ -1,15 +1,10 @@
 package io.github.yuegod.mvc.core.configuration;
 
 import io.github.yuegod.mvc.core.annotation.Registry;
-import io.github.yuegod.mvc.core.common.AnnotationRegistry;
-import io.github.yuegod.mvc.core.ioc.ContainerHandler;
 
-import java.lang.annotation.Annotation;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author quziwei
@@ -20,9 +15,9 @@ public class RegistryAnnotationConfiguration {
 
 
     /**
-     * 获取加了Registry注解的类型
+     * 获取加了Registry注解的类型,并且按Order对注册类进行排序
      *
-     * @return 返回集合
+     * @return 返回一个排好序的RegistryDescription集合，改类型是对Registry类的一个描述
      */
     public Set<RegistryDescription> getRegistryClazz(Set<Class> scannedClass) {
         Set<RegistryDescription> registryDescriptions = new LinkedHashSet<>();
