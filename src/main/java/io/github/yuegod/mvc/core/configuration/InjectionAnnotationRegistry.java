@@ -5,6 +5,7 @@ import io.github.yuegod.mvc.core.annotation.Injection;
 import io.github.yuegod.mvc.core.annotation.Registry;
 import io.github.yuegod.mvc.core.common.AnnotationRegistry;
 import io.github.yuegod.mvc.core.ioc.AchieveContainerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -17,6 +18,7 @@ import java.util.Set;
  * @description 依赖注入注解注册类
  **/
 @Registry(order = 2)
+@Slf4j
 public class InjectionAnnotationRegistry implements AnnotationRegistry {
     @Override
     public Class<? extends Annotation> registry() {
@@ -38,34 +40,44 @@ public class InjectionAnnotationRegistry implements AnnotationRegistry {
 
 
     public Object getInstance(String instanceName,Object instance,AchieveContainerFactory containerFactory) throws Exception {
-
-        Object sigleton = getSingleton(instanceName,containerFactory);
-        if (sigleton != null) {
-            return sigleton;
-        }
-        //标记正在创建
-        if (!containerFactory.getCircularDependencyFlags().contains(instanceName)) {
-            containerFactory.getCircularDependencyFlags().add(instanceName);
-        }
-        //属性赋值
-        Field[] declaredFields = instance.getClass().getDeclaredFields();
-        for (Field declaredField : declaredFields) {
-            Injection annotation = declaredField.getAnnotation(Injection.class);
-            if (annotation != null) {
-                declaredField.setAccessible(true);
-                Object fieldInstance = containerFactory.getInstance(declaredField.getType().getName());
-                Object bean = getInstance(declaredField.getType().getName(),fieldInstance,containerFactory);
-                declaredField.set(instance, bean);
+        synchronized (containerFactory.getIncompleteInstanceCache()){
+            Object sigleton = getSingleton(instanceName,containerFactory);
+            if (sigleton != null) {
+                return sigleton;
+            }
+            //标记正在创建
+            if (!containerFactory.getCircularDependencyFlags().contains(instanceName)) {
+                containerFactory.getCircularDependencyFlags().add(instanceName);
+            }
+            //属性赋值
+            try {
+                Field[] declaredFields = instance.getClass().getDeclaredFields();
+                for (Field declaredField : declaredFields) {
+                    try {
+                        Injection annotation = declaredField.getAnnotation(Injection.class);
+                        if (annotation != null) {
+                            declaredField.setAccessible(true);
+                            Object fieldInstance = containerFactory.getInstance(declaredField.getType().getName());
+                            Object bean = getInstance(declaredField.getType().getName(),fieldInstance,containerFactory);
+                            declaredField.set(instance, bean);
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        log.error("属性赋值出错！欲赋值的类:{},欲赋值字段{}",instance.getClass().getName(),declaredField.getName());
+                    }
+                }
+            }catch (Exception e){
+                log.error("属性赋值出错！欲赋值的类:{}",instance.getClass().getName());
 
             }
+            //要先从二级缓存当中拿一下
+            if (containerFactory.getIncompleteInstanceCache().containsKey(instanceName)) {
+                instance = containerFactory.getIncompleteInstanceCache().get(instanceName);
+            }
+            //这时候我赋值进去的A就是一个动态代理的A
+            //添加到一级缓存
+            containerFactory.getSingletonCache().put(instanceName, instance);
         }
-        //要先从二级缓存当中拿一下
-        if (containerFactory.getIncompleteInstanceCache().containsKey(instanceName)) {
-            instance = containerFactory.getIncompleteInstanceCache().get(instanceName);
-        }
-        //这时候我赋值进去的A就是一个动态代理的A
-        //添加到一级缓存
-        containerFactory.getSingletonCache().put(instanceName, instance);
 
         //remove 二级缓存和三级缓存
         return instance;
