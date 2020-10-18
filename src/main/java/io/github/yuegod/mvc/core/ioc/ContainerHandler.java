@@ -6,10 +6,9 @@ import io.github.yuegod.mvc.core.configuration.RegistryDescription;
 import io.github.yuegod.mvc.util.StringUtils;
 
 import java.lang.annotation.Annotation;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * @author quziwei
@@ -22,7 +21,7 @@ public class ContainerHandler {
 
     private RegistryAnnotationConfiguration registryAnnotationConfiguration;
 
-    private HashMap<String, AnnotationRegistry> annotationRegistryHashMap;
+    private LinkedHashMap<String, AnnotationRegistry> annotationRegistryHashMap;
 
     public ContainerHandler() {
         this(new AchieveContainerFactory());
@@ -71,7 +70,22 @@ public class ContainerHandler {
     }
 
     /**
-     * 4.找到带有实现AnnotationRegistry的对象并执行registry方法，向容器中注册该注解
+     * 4.找到符合AnnotationRegistry类型的实例
+     */
+    public void findAnnotationRegistryInstance() {
+        LinkedHashMap<String, AnnotationRegistry> annotationRegistries = new LinkedHashMap<>();
+        Set<Map.Entry<String, Object>> entries = containerFactory.getRegistrySingletonCache().entrySet();
+        for (Map.Entry<String, Object> entry : entries) {
+            if (entry.getValue() instanceof AnnotationRegistry) {
+                AnnotationRegistry annotationRegistry = (AnnotationRegistry) entry.getValue();
+                annotationRegistries.put(entry.getKey(), annotationRegistry);
+            }
+        }
+        this.annotationRegistryHashMap = annotationRegistries;
+    }
+
+    /**
+     * 5.找到带有实现AnnotationRegistry的对象并执行registry方法，向容器中注册该注解
      */
     private void invokeAnnotationRegistry() {
         HashMap<String, AnnotationRegistry> annotationRegistryHashMap = this.annotationRegistryHashMap;
@@ -82,20 +96,6 @@ public class ContainerHandler {
         }
     }
 
-    /**
-     * 5.找到符合AnnotationRegistry类型的实例
-     */
-    public void findAnnotationRegistryInstance() {
-        HashMap<String, AnnotationRegistry> annotationRegistries = new HashMap<>();
-        Set<Map.Entry<String, Object>> entries = containerFactory.getRegistrySingletonCache().entrySet();
-        for (Map.Entry<String, Object> entry : entries) {
-            if (entry.getValue() instanceof AnnotationRegistry) {
-                AnnotationRegistry annotationRegistry = (AnnotationRegistry) entry.getValue();
-                annotationRegistries.put(entry.getKey(), annotationRegistry);
-            }
-        }
-        this.annotationRegistryHashMap = annotationRegistries;
-    }
 
     /**
      * 6.将扫描到的类传入给AnnotationRegistry的handler方法中，具体处理由该接口实现类处理
@@ -110,6 +110,20 @@ public class ContainerHandler {
                 if (scannedClazz.getAnnotation(annotationClazz) != null) {
                     annotationRegistry.handler(scannedClazz, containerFactory);
                 }
+                //扫描字段
+                Field[] fields = scannedClazz.getDeclaredFields();
+                for (Field field : fields) {
+                    if (field.getAnnotation(annotationClazz) != null){
+                        annotationRegistry.handler(scannedClazz,containerFactory);
+                    }
+                }
+                //扫描方法
+                Method[] methods = scannedClazz.getMethods();
+                for (Method method : methods) {
+                    if (method.getAnnotation(annotationClazz) != null){
+                        annotationRegistry.handler(scannedClazz,containerFactory);
+                    }
+                }
             }
         }
     }
@@ -118,7 +132,20 @@ public class ContainerHandler {
      * 初始化IOC容器
      */
     public void initialize(String packagePath) {
+        //先扫描出来所有的内置组建
+        scan("io.github.yuegod.mvc");
+        //2.扫描用户指定的包文件
+        scan(packagePath);
 
+        initializationRegistryAnnotationConfiguration();
+
+        registryConfiguration();
+
+        findAnnotationRegistryInstance();
+
+        invokeAnnotationRegistry();
+
+        invokeAnnotationHandler();
     }
 
 

@@ -9,5 +9,5 @@ public interface ContainerFactory {
     
     Object getInstance(String instanceName);
 
-    Object createInstance(String instanceName);
+
 }

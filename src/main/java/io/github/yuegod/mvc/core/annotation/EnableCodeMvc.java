@@ -4,15 +4,12 @@ import java.lang.annotation.*;
 
 /**
  * @author quziwei
- * @date 2020/10/07
- * @description 注册一个配置给code-mvc
+ * @date 2020/10/19
+ * @description 启动Codemvc
  **/
 @Target({ElementType.TYPE})
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Registry {
-    /**
-     * 排序 order越小优先级越高
-     */
-    int order() default 100;
+public @interface EnableCodeMvc {
+    String scanPackage() default "";
 }

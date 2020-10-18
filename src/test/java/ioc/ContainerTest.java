@@ -24,7 +24,7 @@ public class ContainerTest {
     public void scanner() throws IOException, URISyntaxException {
         String name = ContainerScanner.class.getPackage().getName();
         System.out.println(name);
-        Set<Class> classes = getClasses("");
+        Set<Class> classes = getClasses("io.github.yuegod.mvc.core.ioc");
         for (Class<?> aClass : classes) {
             System.out.println(aClass.getName());
         }
