@@ -10,7 +10,6 @@ import lombok.Data;
  * @description
  **/
 @IoC
-@Data
 public class User {
 
     private String name = "张三";

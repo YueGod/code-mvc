@@ -10,10 +10,13 @@ import lombok.Data;
  * @description
  **/
 @IoC
-@Data
 public class Person {
 
     @Injection
     private User user;
+
+    public void sayHi(){
+        System.out.println("hi!");
+    }
 
 }

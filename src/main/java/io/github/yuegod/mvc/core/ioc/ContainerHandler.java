@@ -103,8 +103,8 @@ public class ContainerHandler {
     private void invokeAnnotationHandler() {
         HashMap<String, AnnotationRegistry> annotationRegistryHashMap = this.annotationRegistryHashMap;
         Set<Map.Entry<String, AnnotationRegistry>> entries = annotationRegistryHashMap.entrySet();
-        for (Class scannedClazz : containerFactory.getScannedClazz()) {
-            for (Map.Entry<String, AnnotationRegistry> entry : entries) {
+        for (Map.Entry<String, AnnotationRegistry> entry : entries) {
+            for (Class scannedClazz : containerFactory.getScannedClazz()) {
                 Class<? extends Annotation> annotationClazz = containerFactory.getAnnotationRegistryCache().get(entry.getKey());
                 AnnotationRegistry annotationRegistry = entry.getValue();
                 if (scannedClazz.getAnnotation(annotationClazz) != null) {
@@ -113,15 +113,15 @@ public class ContainerHandler {
                 //扫描字段
                 Field[] fields = scannedClazz.getDeclaredFields();
                 for (Field field : fields) {
-                    if (field.getAnnotation(annotationClazz) != null){
-                        annotationRegistry.handler(scannedClazz,containerFactory);
+                    if (field.getAnnotation(annotationClazz) != null) {
+                        annotationRegistry.handler(scannedClazz, containerFactory);
                     }
                 }
                 //扫描方法
                 Method[] methods = scannedClazz.getMethods();
                 for (Method method : methods) {
-                    if (method.getAnnotation(annotationClazz) != null){
-                        annotationRegistry.handler(scannedClazz,containerFactory);
+                    if (method.getAnnotation(annotationClazz) != null) {
+                        annotationRegistry.handler(scannedClazz, containerFactory);
                     }
                 }
             }

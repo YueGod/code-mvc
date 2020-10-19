@@ -23,6 +23,7 @@ public class IoCTest extends AchieveContainerFactory {
         CodeMvcBoot.run(IoCTest.class);
         Person person  = getInstance(Person.class.getName(),Person.class);
         System.out.println(person);
+        person.sayHi();
     }
 
 }

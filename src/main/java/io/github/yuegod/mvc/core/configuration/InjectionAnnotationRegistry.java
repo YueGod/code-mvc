@@ -30,8 +30,8 @@ public class InjectionAnnotationRegistry implements AnnotationRegistry {
         Set<Map.Entry<String, Object>> entries = containerFactory.getIncompleteInstanceCache().entrySet();
         for (Map.Entry<String, Object> entry : entries) {
             try {
-                Object instance = getInstance(entry.getKey(), entry.getValue(),containerFactory);
-                containerFactory.getSingletonCache().put(entry.getKey(),instance);
+                Object instance = getInstance(entry.getKey(), entry.getValue(), containerFactory);
+                containerFactory.getSingletonCache().put(entry.getKey(), instance);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -39,12 +39,12 @@ public class InjectionAnnotationRegistry implements AnnotationRegistry {
     }
 
 
-    public Object getInstance(String instanceName,Object instance,AchieveContainerFactory containerFactory) throws Exception {
-        synchronized (containerFactory.getIncompleteInstanceCache()){
-            Object sigleton = getSingleton(instanceName,containerFactory);
-            if (sigleton != null) {
-                return sigleton;
-            }
+    public Object getInstance(String instanceName, Object instance, AchieveContainerFactory containerFactory) throws Exception {
+        Object sigleton = getSingleton(instanceName, containerFactory);
+        if (sigleton != null) {
+            return sigleton;
+        }
+        synchronized (containerFactory.getIncompleteInstanceCache()) {
             //标记正在创建
             if (!containerFactory.getCircularDependencyFlags().contains(instanceName)) {
                 containerFactory.getCircularDependencyFlags().add(instanceName);
@@ -57,17 +57,17 @@ public class InjectionAnnotationRegistry implements AnnotationRegistry {
                         Injection annotation = declaredField.getAnnotation(Injection.class);
                         if (annotation != null) {
                             declaredField.setAccessible(true);
-                            Object fieldInstance = containerFactory.getInstance(declaredField.getType().getName());
-                            Object bean = getInstance(declaredField.getType().getName(),fieldInstance,containerFactory);
+                            Object fieldInstance = containerFactory.getIncompleteInstanceCache().get(declaredField.getType().getName());
+                            Object bean = getInstance(declaredField.getType().getName(), fieldInstance, containerFactory);
                             declaredField.set(instance, bean);
                         }
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
-                        log.error("属性赋值出错！欲赋值的类:{},欲赋值字段{}",instance.getClass().getName(),declaredField.getName());
+                        log.error("属性赋值出错！欲赋值的类:{},欲赋值字段{}", instance.getClass().getName(), declaredField.getName());
                     }
                 }
-            }catch (Exception e){
-                log.error("属性赋值出错！欲赋值的类:{}",instance.getClass().getName());
+            } catch (Exception e) {
+                log.error("属性赋值出错！欲赋值的类:{}", instance.getClass().getName());
 
             }
             //要先从二级缓存当中拿一下
@@ -83,19 +83,21 @@ public class InjectionAnnotationRegistry implements AnnotationRegistry {
         return instance;
     }
 
-    private Object getSingleton(String instanceName,AchieveContainerFactory containerFactory) {
+    private Object getSingleton(String instanceName, AchieveContainerFactory containerFactory) {
         Object bean = containerFactory.getSingletonCache().get(instanceName);
-        //如果一级缓存当中没有，并且还有在循环依赖标识当中存在，说明是循环依赖
-        if (bean == null && containerFactory.getCircularDependencyFlags().contains(instanceName)) {
-            //如果二级缓存当中有，就直接返回二级缓存当中的
-            if (containerFactory.getIncompleteInstanceCache().containsKey(instanceName)) {
-                return containerFactory.getIncompleteInstanceCache().get(instanceName);
-            }
-            //如果是循环依赖先去三级缓存当中创建动态代理,从三级缓存当中拿
-            ProxyObjectFactory objectFactory = containerFactory.getProxyInstanceCache().get(instanceName);
-            if (objectFactory != null) {
-                Object factoryObject = objectFactory.getObject();
-                containerFactory.getIncompleteInstanceCache().put(instanceName, factoryObject);
+        synchronized (containerFactory.getIncompleteInstanceCache()) {
+            //如果一级缓存当中没有，并且还有在循环依赖标识当中存在，说明是循环依赖
+            if (bean == null && containerFactory.getCircularDependencyFlags().contains(instanceName)) {
+                //如果二级缓存当中有，就直接返回二级缓存当中的
+                if (containerFactory.getIncompleteInstanceCache().containsKey(instanceName)) {
+                    return containerFactory.getIncompleteInstanceCache().get(instanceName);
+                }
+                //如果是循环依赖先去三级缓存当中创建动态代理,从三级缓存当中拿
+                ProxyObjectFactory objectFactory = containerFactory.getProxyInstanceCache().get(instanceName);
+                if (objectFactory != null) {
+                    Object factoryObject = objectFactory.getObject();
+                    containerFactory.getIncompleteInstanceCache().put(instanceName, factoryObject);
+                }
             }
         }
         return bean;
