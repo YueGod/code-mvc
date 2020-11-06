@@ -11,11 +11,11 @@ public class RegistryDescription {
 
     private String instanceName;
 
-    private Class registryClazz;
+    private Class<?> registryClazz;
 
     private int order;
 
-    public RegistryDescription(String instanceName, Class registryClazz, int order) {
+    public RegistryDescription(String instanceName, Class<?> registryClazz, int order) {
         this.instanceName = instanceName;
         this.registryClazz = registryClazz;
         this.order = order;
@@ -29,11 +29,11 @@ public class RegistryDescription {
         this.instanceName = instanceName;
     }
 
-    public Class getRegistryClazz() {
+    public Class<?> getRegistryClazz() {
         return registryClazz;
     }
 
-    public void setRegistryClazz(Class registryClazz) {
+    public void setRegistryClazz(Class<?> registryClazz) {
         this.registryClazz = registryClazz;
     }
 

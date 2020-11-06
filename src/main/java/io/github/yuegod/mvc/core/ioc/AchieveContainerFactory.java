@@ -2,7 +2,6 @@ package io.github.yuegod.mvc.core.ioc;
 
 import io.github.yuegod.mvc.aop.ProxyObjectFactory;
 import io.github.yuegod.mvc.core.common.ContainerFactory;
-import io.github.yuegod.mvc.core.common.Factory;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;
@@ -11,7 +10,6 @@ import java.util.Set;
 /**
  * @author quziwei
  * @date 2020/10/07
- * @description
  **/
 public class AchieveContainerFactory extends AbstractContainer implements ContainerFactory {
     @Override
@@ -19,7 +17,7 @@ public class AchieveContainerFactory extends AbstractContainer implements Contai
         return singletonCache.get(instanceName);
     }
 
-    public  <T> T getInstance(String instanceName,Class clazz){
+    public  <T> T getInstance(String instanceName,Class<?> clazz){
         return (T) clazz.cast(getInstance(instanceName));
     }
 
@@ -31,19 +29,19 @@ public class AchieveContainerFactory extends AbstractContainer implements Contai
         singletonCache.put(instanceName, instance);
     }
 
-    public Set<Class> getScannedClazz() {
+    public Set<Class<?>> getScannedClazz() {
         return scannedClazz;
     }
 
-    public void putScannedClazz(Class clazz) {
+    public void putScannedClazz(Class<?> clazz) {
         scannedClazz.add(clazz);
     }
 
-    public Map<String, Class> getCandidateCache() {
+    public Map<String, Class<?>> getCandidateCache() {
         return candidateCache;
     }
 
-    public void putCandidateCache(String instanceName, Class clazz) {
+    public void putCandidateCache(String instanceName, Class<?> clazz) {
         candidateCache.put(instanceName, clazz);
     }
 
@@ -55,11 +53,11 @@ public class AchieveContainerFactory extends AbstractContainer implements Contai
         incompleteInstanceCache.put(instanceName, instance);
     }
 
-    public Map<String, ProxyObjectFactory> getProxyInstanceCache() {
+    public Map<String, ProxyObjectFactory<?>> getProxyInstanceCache() {
         return proxyInstanceCache;
     }
 
-    public void putProxyInstanceCache(String instanceName, ProxyObjectFactory proxyObjectFactory) {
+    public void putProxyInstanceCache(String instanceName, ProxyObjectFactory<?> proxyObjectFactory) {
         proxyInstanceCache.put(instanceName, proxyObjectFactory);
     }
 

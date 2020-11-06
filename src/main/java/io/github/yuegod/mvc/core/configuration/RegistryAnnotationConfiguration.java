@@ -19,7 +19,7 @@ public class RegistryAnnotationConfiguration {
      *
      * @return 返回一个排好序的RegistryDescription集合，改类型是对Registry类的一个描述
      */
-    public Set<RegistryDescription> getRegistryClazz(Set<Class> scannedClass) {
+    public Set<RegistryDescription> getRegistryClazz(Set<Class<?>> scannedClass) {
         Set<RegistryDescription> registryDescriptions = new LinkedHashSet<>();
         for (Class<?> clazz : scannedClass) {
             if (isRegistry(clazz)) {

@@ -13,11 +13,11 @@ import java.util.*;
 /**
  * @author quziwei
  * @date 2020/10/07
- * @description 容器处理
+ * 容器处理
  **/
 public class ContainerHandler {
 
-    private AchieveContainerFactory containerFactory;
+    private final AchieveContainerFactory containerFactory;
 
     private RegistryAnnotationConfiguration registryAnnotationConfiguration;
 
@@ -102,7 +102,7 @@ public class ContainerHandler {
         HashMap<String, AnnotationRegistry> annotationRegistryHashMap = this.annotationRegistryHashMap;
         Set<Map.Entry<String, AnnotationRegistry>> entries = annotationRegistryHashMap.entrySet();
         for (Map.Entry<String, AnnotationRegistry> entry : entries) {
-            for (Class scannedClazz : containerFactory.getScannedClazz()) {
+            for (Class<?> scannedClazz : containerFactory.getScannedClazz()) {
                 Class<? extends Annotation> annotationClazz = containerFactory.getAnnotationRegistryCache().get(entry.getKey());
                 AnnotationRegistry annotationRegistry = entry.getValue();
                 if (scannedClazz.getAnnotation(annotationClazz) != null) {

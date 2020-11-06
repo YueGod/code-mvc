@@ -15,7 +15,7 @@ import java.util.jar.JarFile;
 /**
  * @author quziwei
  * @date 2020/10/07
- * @description 扫描器
+ * 扫描器
  **/
 @Slf4j
 public class ContainerScanner {
@@ -79,17 +79,15 @@ public class ContainerScanner {
                                     packagePath = name.substring(0, idx).replace('/', PACKAGE_PATH_REGEX);
                                 }
                                 //如果可以迭代下去 并且是一个包
-                                if ((idx != -1) || recursive) {
-                                    //如果是一个.class文件 而且不是目录
-                                    if (name.endsWith(".class") && !entry.isDirectory()) {
-                                        //去掉后面的".class" 获取真正的类名
-                                        String className = name.substring(packagePath.length() + 1, name.length() - 6);
-                                        try {
-                                            //添加到classes
-                                            classes.add(Class.forName(packagePath + PACKAGE_PATH_REGEX + className));
-                                        } catch (ClassNotFoundException e) {
-                                            e.printStackTrace();
-                                        }
+                                //如果是一个.class文件 而且不是目录
+                                if (name.endsWith(".class") && !entry.isDirectory()) {
+                                    //去掉后面的".class" 获取真正的类名
+                                    String className = name.substring(packagePath.length() + 1, name.length() - 6);
+                                    try {
+                                        //添加到classes
+                                        classes.add(Class.forName(packagePath + PACKAGE_PATH_REGEX + className));
+                                    } catch (ClassNotFoundException e) {
+                                        e.printStackTrace();
                                     }
                                 }
                             }
@@ -114,14 +112,14 @@ public class ContainerScanner {
             return;
         }
         //如果存在 就获取包下的所有文件 包括目录
-        File[] dirfiles = dir.listFiles(new FileFilter() {
-            //自定义过滤规则 如果可以循环(包含子目录) 或则是以.class结尾的文件(编译好的java类文件)
-            @Override
-            public boolean accept(File file) {
-                return (recursive && file.isDirectory()) || (file.getName().endsWith(".class"));
-            }
-        });
+        //自定义过滤规则 如果可以循环(包含子目录) 或则是以.class结尾的文件(编译好的java类文件)
+        File[] dirfiles = dir.listFiles(file -> (recursive && file.isDirectory()) || (file.getName().endsWith(".class")));
         //循环所有文件
+        Optional<File[]> files = Optional.ofNullable(dirfiles);
+        if (files.isPresent()) {
+            return;
+        }
+        dirfiles = files.orElse(new File[1]);
         for (File file : dirfiles) {
             //如果是目录 则继续扫描
             if (file.isDirectory()) {
