@@ -39,7 +39,7 @@ public class InjectionAnnotationRegistry implements AnnotationRegistry {
     }
 
 
-    public Object getInstance(String instanceName, Object instance, AchieveContainerFactory containerFactory) throws Exception {
+    public Object getInstance(String instanceName, Object instance, AchieveContainerFactory containerFactory) {
         Object sigleton = getSingleton(instanceName, containerFactory);
         if (sigleton != null) {
             return sigleton;
