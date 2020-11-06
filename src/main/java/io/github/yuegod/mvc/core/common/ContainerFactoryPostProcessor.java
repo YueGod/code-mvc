@@ -13,7 +13,7 @@ public interface ContainerFactoryPostProcessor {
      * @param instanceName 实例称
      * @return 返回一个类对象
      */
-     default Class containerFactoryBeforePostProcessor(String instanceName,Class clazz){
+     default Class<?> containerFactoryBeforePostProcessor(String instanceName,Class clazz){
       return clazz;
      }
 
