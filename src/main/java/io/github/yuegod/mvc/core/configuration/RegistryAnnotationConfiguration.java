@@ -21,9 +21,9 @@ public class RegistryAnnotationConfiguration {
      */
     public Set<RegistryDescription> getRegistryClazz(Set<Class> scannedClass) {
         Set<RegistryDescription> registryDescriptions = new LinkedHashSet<>();
-        for (Class clazz : scannedClass) {
+        for (Class<?> clazz : scannedClass) {
             if (isRegistry(clazz)) {
-                Registry registry = (Registry) clazz.getAnnotation(Registry.class);
+                Registry registry = clazz.getAnnotation(Registry.class);
                 RegistryDescription registryDescription = new RegistryDescription(clazz.getName(), clazz, registry.order());
                 registryDescriptions.add(registryDescription);
             }
@@ -36,11 +36,8 @@ public class RegistryAnnotationConfiguration {
     /**
      * 判断该类是否加了Registry注解
      */
-    private boolean isRegistry(Class clazz) {
-        if (clazz.getAnnotation(Registry.class) != null) {
-            return true;
-        }
-        return false;
+    private boolean isRegistry(Class<?> clazz) {
+        return clazz.getAnnotation(Registry.class) != null;
     }
 
 }

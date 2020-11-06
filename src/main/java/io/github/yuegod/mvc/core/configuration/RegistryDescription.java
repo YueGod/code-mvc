@@ -1,5 +1,7 @@
 package io.github.yuegod.mvc.core.configuration;
 
+import java.util.Objects;
+
 /**
  * @author quziwei
  * @date 2020/10/08
@@ -41,5 +43,20 @@ public class RegistryDescription {
 
     public void setOrder(int order) {
         this.order = order;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RegistryDescription that = (RegistryDescription) o;
+        return order == that.order &&
+                Objects.equals(instanceName, that.instanceName) &&
+                Objects.equals(registryClazz, that.registryClazz);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(instanceName, registryClazz, order);
     }
 }

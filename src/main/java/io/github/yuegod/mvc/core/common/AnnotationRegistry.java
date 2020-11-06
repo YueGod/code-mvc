@@ -18,6 +18,7 @@ public interface AnnotationRegistry {
      */
     Class<? extends Annotation> registry();
 
+
     /**
      * 对于该注解的处理方法
      *
