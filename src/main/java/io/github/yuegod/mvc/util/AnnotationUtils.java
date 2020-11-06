@@ -9,11 +9,8 @@ import java.lang.annotation.Annotation;
  **/
 public class AnnotationUtils {
 
-    public static boolean isExistAnnotation(Class targetClazz, Class<? extends Annotation> annotation){
-        if (targetClazz.getAnnotation(annotation) != null){
-            return true;
-        }
-        return false;
+    public static boolean isExistAnnotation(Class<?> targetClazz, Class<? extends Annotation> annotation){
+        return targetClazz.getAnnotation(annotation) != null;
     }
 
 }

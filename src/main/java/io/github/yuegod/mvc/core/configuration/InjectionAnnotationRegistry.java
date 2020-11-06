@@ -26,7 +26,7 @@ public class InjectionAnnotationRegistry implements AnnotationRegistry {
     }
 
     @Override
-    public void handler(Class clazz, AchieveContainerFactory containerFactory) {
+    public void handler(Class<?> clazz, AchieveContainerFactory containerFactory) {
         Set<Map.Entry<String, Object>> entries = containerFactory.getIncompleteInstanceCache().entrySet();
         for (Map.Entry<String, Object> entry : entries) {
             try {
@@ -46,9 +46,7 @@ public class InjectionAnnotationRegistry implements AnnotationRegistry {
         }
         synchronized (containerFactory.getIncompleteInstanceCache()) {
             //标记正在创建
-            if (!containerFactory.getCircularDependencyFlags().contains(instanceName)) {
-                containerFactory.getCircularDependencyFlags().add(instanceName);
-            }
+            containerFactory.getCircularDependencyFlags().add(instanceName);
             //属性赋值
             try {
                 Field[] declaredFields = instance.getClass().getDeclaredFields();
@@ -93,7 +91,7 @@ public class InjectionAnnotationRegistry implements AnnotationRegistry {
                     return containerFactory.getIncompleteInstanceCache().get(instanceName);
                 }
                 //如果是循环依赖先去三级缓存当中创建动态代理,从三级缓存当中拿
-                ProxyObjectFactory objectFactory = containerFactory.getProxyInstanceCache().get(instanceName);
+                ProxyObjectFactory<?> objectFactory = containerFactory.getProxyInstanceCache().get(instanceName);
                 if (objectFactory != null) {
                     Object factoryObject = objectFactory.getObject();
                     containerFactory.getIncompleteInstanceCache().put(instanceName, factoryObject);

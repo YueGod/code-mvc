@@ -5,11 +5,9 @@ import io.github.yuegod.mvc.core.annotation.Registry;
 import io.github.yuegod.mvc.core.common.*;
 import io.github.yuegod.mvc.core.ioc.AchieveContainerFactory;
 
-import java.awt.*;
 import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author quziwei
@@ -25,8 +23,7 @@ public class IocAnnotationRegistry implements AnnotationRegistry {
     }
 
     @Override
-    public void handler(Class clazz, AchieveContainerFactory containerFactory) {
-        AchieveContainerFactory factory = containerFactory;
+    public void handler(Class<?> clazz, AchieveContainerFactory containerFactory) {
         clazz = invokeContainerFactoryBeforePostProcessor(clazz.getName(),clazz,containerFactory);
         Object instance = createInstance(clazz);
         instance = invokeContainerFactoryAfterPostProcessor(clazz.getName(), instance,containerFactory);
@@ -36,7 +33,7 @@ public class IocAnnotationRegistry implements AnnotationRegistry {
     /**
      * 实例化之前先调用一次ContainerFactoryPostProcessor
      */
-    public Class invokeContainerFactoryBeforePostProcessor(String instanceName,Class clazz,AchieveContainerFactory containerFactory){
+    public Class<?> invokeContainerFactoryBeforePostProcessor(String instanceName,Class<?> clazz,AchieveContainerFactory containerFactory){
         Map<String, Object> registrySingletonCache = containerFactory.getRegistrySingletonCache();
         Set<Map.Entry<String, Object>> entries = registrySingletonCache.entrySet();
         for (Map.Entry<String, Object> entry : entries) {
@@ -51,7 +48,7 @@ public class IocAnnotationRegistry implements AnnotationRegistry {
     /**
      * 实例化
      */
-    public Object createInstance(Class clazz){
+    public Object createInstance(Class<?> clazz){
         try {
             Object instance = clazz.newInstance();
             if (instance instanceof FactoryInstance){
@@ -59,9 +56,7 @@ public class IocAnnotationRegistry implements AnnotationRegistry {
                 instance = factory.getObject();
             }
             return instance;
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
         return null;

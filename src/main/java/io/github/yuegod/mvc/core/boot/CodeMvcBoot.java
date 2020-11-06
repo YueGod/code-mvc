@@ -13,7 +13,7 @@ public class CodeMvcBoot {
 
     private static ContainerHandler containerHandler = new ContainerHandler();
 
-    public static void run(Class boot){
+    public static void run(Class<?> boot){
         EnableCodeMvc enableCodeMvc = (EnableCodeMvc) boot.getAnnotation(EnableCodeMvc.class);
         String scanPackage;
         if (StringUtils.isNotEmpty(enableCodeMvc.scanPackage())){

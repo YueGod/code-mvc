@@ -24,6 +24,6 @@ public interface AnnotationRegistry {
      *
      * @param clazz 传入一个被扫描到的Class类
      */
-    void handler(Class clazz, AchieveContainerFactory containerFactory);
+    void handler(Class<?> clazz, AchieveContainerFactory containerFactory);
 
 }
