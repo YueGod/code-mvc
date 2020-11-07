@@ -11,10 +11,10 @@ import io.github.yuegod.mvc.util.StringUtils;
  **/
 public class CodeMvcBoot {
 
-    private static ContainerHandler containerHandler = new ContainerHandler();
+    private static final ContainerHandler containerHandler = new ContainerHandler();
 
     public static void run(Class<?> boot){
-        EnableCodeMvc enableCodeMvc = (EnableCodeMvc) boot.getAnnotation(EnableCodeMvc.class);
+        EnableCodeMvc enableCodeMvc = boot.getAnnotation(EnableCodeMvc.class);
         String scanPackage;
         if (StringUtils.isNotEmpty(enableCodeMvc.scanPackage())){
             scanPackage = enableCodeMvc.scanPackage();
